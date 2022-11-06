@@ -28,15 +28,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Middleware de autenticação
-//app.use((req, res, next) => {
-//  req.user = {
-//    _id: "634487a8c49a15e4b7ce160d", // cole o _id do usuário teste criado no passo anterior
-//  };
-
-//  next();
-//});
-
 app.post("/signin", login);
 app.post("/signup", createUser);
 
