@@ -1,0 +1,19 @@
+.register__save-button-text {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  /* identical to box height */
+
+  color: #ffffff;
+  text-align: center;
+
+  text-decoration: none;
+  margin-bottom: 80px;
+}
+
+.register__save-button-text:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}

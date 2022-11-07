@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema({
     type: String, // o nome é uma string
     required: true, // cada usuário tem um nome, logo, é um campo obrigatório
     minlength: 8, // o comprimento mínimo do nome é de 8 caracteres
+    select: false,
   },
 });
 
@@ -50,19 +51,21 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
   password
 ) {
-  return this.findOne({ email }).then((user) => {
-    if (!user) {
-      return Promise.reject(new Error("Senha ou e-mail incorreto"));
-    }
-
-    return bcrypt.compare(password, user.password).then((matched) => {
-      if (!matched) {
+  return this.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      if (!user) {
         return Promise.reject(new Error("Senha ou e-mail incorreto"));
       }
 
-      return user; // agora o usuário está disponível
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          return Promise.reject(new Error("Senha ou e-mail incorreto"));
+        }
+
+        return user; // agora o usuário está disponível
+      });
     });
-  });
 };
 
 module.exports = mongoose.model("user", userSchema);

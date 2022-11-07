@@ -36,7 +36,19 @@ module.exports.deleteCard = (req, res) => {
       error.statusCode = 404;
       throw error;
     })
-    .then((user) => res.send({ data: user }))
+    .then((card) => {
+      if (card && req.user._id.toString() === card.owner.toString()) {
+        Card.deleteOne(card).then((deletedCard) => {
+          res.send(deletedCard);
+        });
+      } else if (!card) {
+        throw new NotFoundError("Card not found.");
+      } else {
+        throw new AuthError(
+          "You need to be the owner of this card to delete it."
+        );
+      }
+    })
     .catch((err) => {
       if (err.statusCode === 404) {
         const ERROR_CODE = 404;

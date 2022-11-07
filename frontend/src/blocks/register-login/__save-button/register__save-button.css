@@ -1,0 +1,29 @@
+.register__save-button {
+  width: 358px;
+  height: 50px;
+  background: #fff;
+  border-radius: 2px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: center;
+  align-self: center;
+
+  color: #000;
+  margin: 216px 0 15px;
+}
+
+.register__save-button:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 640px) {
+  .register__save-button {
+    width: 238px;
+    height: 46px;
+  }
+}

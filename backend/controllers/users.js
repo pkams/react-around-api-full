@@ -34,6 +34,28 @@ module.exports.getUsersById = (req, res) => {
     });
 };
 
+module.exports.getMe = (req, res) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      const error = new Error("Nenhum usuário encontrado.");
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      console.log(err);
+      if (err.statusCode === 404) {
+        const ERROR_CODE = 404;
+        res
+          .status(ERROR_CODE)
+          .send({ message: "Cartão ou usuário não encontrado" });
+      } else {
+        const ERROR_CODE = 500;
+        res.status(ERROR_CODE).send({ message: "Error" });
+      }
+    });
+};
+
 module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, 10).then((hash) => {
     User.create({
@@ -70,13 +92,13 @@ module.exports.updateUser = (req, res) => {
     { name, about, avatar },
     { new: true, runValidators: true }
   )
+    .select("+password")
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         const ERROR_CODE = 400;
         res.status(ERROR_CODE).send({
-          message:
-            "Dados inválidos passados aos métodos para criar um cartão/usuário",
+          message: "Dados inválidos passados aos métodos para editar usuário",
         });
       } else {
         const ERROR_CODE = 500;
@@ -92,6 +114,7 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true }
   )
+    .select("+password")
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {

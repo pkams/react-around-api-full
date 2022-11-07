@@ -1,0 +1,17 @@
+.register__form-error {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  color: #ff0000;
+  height: 30px;
+  /*Display inline e width foram retirados, o height deixei como 30px para manter a formatação
+  (com e sem msg de erro), conforme revisões em módulos anteriores. */
+}
+
+@media screen and (max-width: 640px) {
+  .register__form-error {
+    font-size: 8px;
+  }
+}

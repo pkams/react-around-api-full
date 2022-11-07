@@ -1,0 +1,12 @@
+.profile__avatar-edit-button{
+    height: 26px;
+    width: 26px;
+    z-index: 3;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    display: none;
+}
+

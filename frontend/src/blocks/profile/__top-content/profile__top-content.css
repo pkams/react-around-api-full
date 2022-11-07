@@ -1,0 +1,5 @@
+.profile__top-content {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 14px;
+}

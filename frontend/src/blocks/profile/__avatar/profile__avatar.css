@@ -1,0 +1,29 @@
+.profile__avatar {
+  height: 120px;
+  width: 120px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  display: flex;
+}
+
+.profile__avatar:hover > .profile__avatar-img{
+  opacity: 20%;
+}
+
+.profile__avatar:hover > .profile__avatar-edit-button{
+  display: inline;
+  cursor: pointer;
+}
+
+/*.profile__avatar > img{
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
+}*/
+
+@media screen and (max-width: 640px) {
+  .profile__avatar {
+    margin-bottom: 30px;
+  }
+}

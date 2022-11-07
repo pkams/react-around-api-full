@@ -1,0 +1,15 @@
+.popup__container-view-image {
+  position: fixed;
+  z-index: 2;
+  margin: auto;
+  left: 50%;
+  top: calc(50% + 28px);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 640px) {
+  .popup__container-view-image {
+    top: calc(50% - 20px);
+  }
+}
