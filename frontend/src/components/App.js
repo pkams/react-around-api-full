@@ -35,24 +35,26 @@ function App() {
 
   React.useEffect(() => {
     tokenCheck();
-    api.authorization = token;
-    api
-      .getProfileInformation()
-      .then((result) => {
-        setCurrentUser(result.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (token) {
+      api.authorization = token;
+      api
+        .getProfileInformation()
+        .then((result) => {
+          setCurrentUser(result.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-    api
-      .getCards()
-      .then((result) => {
-        setCards(result.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      api
+        .getCards()
+        .then((result) => {
+          setCards(result.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, [token]);
 
   function handleEditAvatarClick() {

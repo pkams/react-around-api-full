@@ -1,11 +1,15 @@
 const Card = require("../models/card");
 
+const BadRequestError = require("../errors/bad-request-err");
+const ServerError = require("../errors/server-err");
+const NotFoundError = require("../errors/not-found-err");
+const AuthError = require("../errors/auth-err");
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((users) => res.send({ data: users }))
     .catch(() => {
-      const ERROR_CODE = 500;
-      res.status(ERROR_CODE).send({ message: "Error" });
+      throw new ServerError("Erro no servidor.");
     });
 };
 
@@ -18,13 +22,11 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         const ERROR_CODE = 400;
-        res.status(ERROR_CODE).send({
-          message:
-            "Dados inválidos passados aos métodos para criar um cartão/usuário",
-        });
+        throw new AuthError(
+          "Dados inválidos passados aos métodos para criar um cartão/usuário"
+        );
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -32,9 +34,9 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      const error = new Error("Nenhum cartão encontrado com esse id");
-      error.statusCode = 404;
-      throw error;
+      throw new AuthError(
+        "Dados inválidos passados aos métodos para criar um cartão/usuário"
+      );
     })
     .then((card) => {
       if (card && req.user._id.toString() === card.owner.toString()) {
@@ -42,22 +44,19 @@ module.exports.deleteCard = (req, res) => {
           res.send(deletedCard);
         });
       } else if (!card) {
-        throw new NotFoundError("Card not found.");
+        throw new NotFoundError("Cartão não encontrado.");
       } else {
         throw new AuthError(
-          "You need to be the owner of this card to delete it."
+          "Você precisa ser o dono deste card para deletá-lo."
         );
       }
     })
     .catch((err) => {
       if (err.statusCode === 404) {
         const ERROR_CODE = 404;
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Cartão ou usuário não encontrado" });
+        throw new NotFoundError("Cartão não encontrado.");
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -69,20 +68,14 @@ module.exports.likeCard = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Nenhum cartão encontrado com esse id");
-      error.statusCode = 404;
-      throw error;
+      throw new AuthError("Nenhum cartão encontrado com esse id");
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
-        const ERROR_CODE = 404;
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Cartão ou usuário não encontrado" });
+        throw new NotFoundError("Cartão não encontrado.");
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -94,20 +87,14 @@ module.exports.dislikeCard = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Nenhum cartão encontrado com esse id");
-      error.statusCode = 404;
-      throw error;
+      throw new AuthError("Nenhum cartão encontrado com esse id");
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
-        const ERROR_CODE = 404;
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Cartão ou usuário não encontrado" });
+        throw new NotFoundError("Cartão não encontrado.");
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };

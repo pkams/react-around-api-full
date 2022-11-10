@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const express = require("express");
+const cors = require("cors");
+
 const cards = require("./routes/cards"); // importando o roteador
 const users = require("./routes/users"); // importando o roteador
 
@@ -25,19 +27,19 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-//////////////////////cors
-const cors = require("cors");
-const corsOptions = {
-  origin: "*",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions)); // Use this after the variable declaration
-/////////////////////
+// cors
+app.use(cors());
+app.options("*", cors()); //habilite solicitações para todas as rotas
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// crash test
+//app.get("/crash-test", () => {
+//  setTimeout(() => {
+//    throw new Error("O servidor travará agora");
+//  }, 0);
+//});
 
 app.post("/signin", login);
 app.post("/signup", createUser);
@@ -53,6 +55,15 @@ app.get("/", (req, res) => {
 
 app.get("*", (req, res) => {
   res.status(404).send({ message: "A solicitação não foi encontrada" });
+});
+
+app.use((err, req, res, next) => {
+  // se um erro não tiver status, exibir 500
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    // verifique o status e exiba uma mensagem baseada nele
+    message: statusCode === 500 ? "Ocorreu um erro no servidor" : message,
+  });
 });
 
 app.listen(PORT, () => {

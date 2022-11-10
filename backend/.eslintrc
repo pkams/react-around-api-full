@@ -4,6 +4,7 @@
     "no-underscore-dangle": "off",
     "quotes": [2, "double", "avoid-escape"],
     "object-shorthand": 0,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
   }
 }
