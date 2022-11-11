@@ -2,11 +2,17 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
 
-const cards = require("./routes/cards"); // importando o roteador
-const users = require("./routes/users"); // importando o roteador
+const { celebrate, Joi, errors, isCelebrateError } = require("celebrate");
+
+const BadRequestError = require("./errors/bad-request-err");
+
+const cards = require("./routes/cards");
+const users = require("./routes/users");
 
 const { createUser, login } = require("./controllers/users");
 const auth = require("./middleware/auth");
+
+const { requestLogger, errorLogger } = require("./middleware/logger");
 
 require("dotenv").config();
 
@@ -34,15 +40,35 @@ app.options("*", cors()); //habilite solicitações para todas as rotas
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// crash test
-//app.get("/crash-test", () => {
-//  setTimeout(() => {
-//    throw new Error("O servidor travará agora");
-//  }, 0);
-//});
+app.use(requestLogger); // habilitando solicitação de agente
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+// crash test
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("O servidor travará agora");
+  }, 0);
+});
+
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login
+);
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().min(8).alphanum().required(),
+    }),
+  }),
+  createUser
+);
 
 // autorização
 app.use(auth);
@@ -55,6 +81,18 @@ app.get("/", (req, res) => {
 
 app.get("*", (req, res) => {
   res.status(404).send({ message: "A solicitação não foi encontrada" });
+});
+
+app.use(errorLogger); // habilitando o agente de erros
+
+app.use(errors()); // tratamento de erros celebrate
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  if (isCelebrateError(err)) {
+    throw new BadRequestError("Request não pode ser completado.");
+  }
+  next(err);
 });
 
 app.use((err, req, res, next) => {

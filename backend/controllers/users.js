@@ -2,34 +2,32 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs"); // importando bcrypt
 const jwt = require("jsonwebtoken");
 
+const ServerError = require("../errors/server-err");
+const NotFoundError = require("../errors/not-found-err");
+const AuthError = require("../errors/auth-err");
+const ConflictError = require("../errors/conflict-err");
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(() => {
-      const ERROR_CODE = 500;
-      res.status(ERROR_CODE).send({ message: "Error" });
+      throw new ServerError("Erro no servidor.");
     });
 };
 
 module.exports.getUsersById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      const error = new Error("Nenhum usuário encontrado com esse id");
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError("Cartão ou usuário não encontrado.");
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
-        const ERROR_CODE = 404;
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Cartão ou usuário não encontrado" });
+        throw new NotFoundError("Cartão ou usuário não encontrado.");
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -37,21 +35,15 @@ module.exports.getUsersById = (req, res) => {
 module.exports.getMe = (req, res) => {
   User.findById(req.user._id)
     .orFail(() => {
-      const error = new Error("Nenhum usuário encontrado.");
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError("Cartão ou usuário não encontrado.");
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.log(err);
-      if (err.statusCode === 404) {
-        const ERROR_CODE = 404;
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Cartão ou usuário não encontrado" });
+      if (err.name === "ValidationError") {
+        throw new NotFoundError("Cartão ou usuário não encontrado.");
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -72,14 +64,13 @@ module.exports.createUser = (req, res) => {
       })
       .catch((err) => {
         if (err.name === "ValidationError") {
-          const ERROR_CODE = 400;
-          res.status(ERROR_CODE).send({
-            message:
-              "Dados inválidos passados aos métodos para criar um cartão/usuário",
-          });
+          throw new AuthError(
+            "Dados inválidos passados aos métodos para criar um cartão/usuário"
+          );
+        } else if (err.name === "MongoError") {
+          throw new ConflictError("User already taken");
         } else {
-          const ERROR_CODE = 400;
-          res.status(ERROR_CODE).send({ message: "Error" });
+          throw new ServerError("Erro no servidor.");
         }
       });
   });
@@ -96,13 +87,11 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const ERROR_CODE = 400;
-        res.status(ERROR_CODE).send({
-          message: "Dados inválidos passados aos métodos para editar usuário",
-        });
+        throw new AuthError(
+          "Dados inválidos passados aos métodos para atualizar um cartão/usuário"
+        );
       } else {
-        const ERROR_CODE = 500;
-        res.status(ERROR_CODE).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -118,12 +107,11 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(400).send({
-          message:
-            "Dados inválidos passados aos métodos para criar um cartão/usuário",
-        });
+        throw new AuthError(
+          "Dados inválidos passados aos métodos para atualizar um cartão/usuário"
+        );
       } else {
-        res.status(500).send({ message: "Error" });
+        throw new ServerError("Erro no servidor.");
       }
     });
 };
@@ -144,7 +132,8 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      // erro de autenticação
-      res.status(401).send({ message: err.message });
+      throw new AuthError(
+        "Dados inválidos passados aos métodos para criar um cartão/usuário"
+      );
     });
 };

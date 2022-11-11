@@ -1,6 +1,6 @@
 const Card = require("../models/card");
+const validator = require("validator");
 
-const BadRequestError = require("../errors/bad-request-err");
 const ServerError = require("../errors/server-err");
 const NotFoundError = require("../errors/not-found-err");
 const AuthError = require("../errors/auth-err");
@@ -21,7 +21,6 @@ module.exports.createCard = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const ERROR_CODE = 400;
         throw new AuthError(
           "Dados inválidos passados aos métodos para criar um cartão/usuário"
         );
