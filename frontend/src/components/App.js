@@ -150,8 +150,7 @@ function App() {
   function onRegister(info, setIsSucceed, setIsPopupOpen) {
     const { password, email } = info;
     auth.register(password, email).then((res) => {
-      console.log(res);
-      if (!res.error) {
+      if (res.message) {
         setIsSucceed(true);
       } else {
         setIsSucceed(false);

@@ -141,8 +141,8 @@ class Api {
 }
 
 const api = new Api({
-  //baseUrl: 'https://around.nomoreparties.co/v1/web_ptbr_cohort_01',
-  baseUrl: 'http://localhost:3000',
+  baseUrl: 'https://api.patricksouza.students.nomoredomainssbs.ru',
+  //baseUrl: 'http://localhost:3000',
   headers: {
     authorization: '',
   },
