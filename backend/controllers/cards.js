@@ -5,15 +5,16 @@ const ServerError = require("../errors/server-err");
 const NotFoundError = require("../errors/not-found-err");
 const AuthError = require("../errors/auth-err");
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((users) => res.send({ data: users }))
     .catch(() => {
       throw new ServerError("Erro no servidor.");
-    });
+    })
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -27,10 +28,11 @@ module.exports.createCard = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       throw new AuthError(
@@ -57,10 +59,11 @@ module.exports.deleteCard = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // adicione _id ao array se ele não estiver lá
@@ -76,10 +79,11 @@ module.exports.likeCard = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // remova _id do array
@@ -95,5 +99,6 @@ module.exports.dislikeCard = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };

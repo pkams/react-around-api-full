@@ -9,15 +9,16 @@ const ConflictError = require("../errors/conflict-err");
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(() => {
       throw new ServerError("Erro no servidor.");
-    });
+    })
+    .catch(next);
 };
 
-module.exports.getUsersById = (req, res) => {
+module.exports.getUsersById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
       throw new NotFoundError("Cartão ou usuário não encontrado.");
@@ -29,10 +30,11 @@ module.exports.getUsersById = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.getMe = (req, res) => {
+module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
       throw new NotFoundError("Cartão ou usuário não encontrado.");
@@ -45,10 +47,11 @@ module.exports.getMe = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10).then((hash) => {
     User.create({
       name: req.body.name,
@@ -72,11 +75,12 @@ module.exports.createUser = (req, res) => {
         } else {
           throw new ServerError("Erro no servidor.");
         }
-      });
+      })
+      .catch(next);
   });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -93,10 +97,11 @@ module.exports.updateUser = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -113,10 +118,11 @@ module.exports.updateAvatar = (req, res) => {
       } else {
         throw new ServerError("Erro no servidor.");
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -135,5 +141,6 @@ module.exports.login = (req, res) => {
       throw new AuthError(
         "Dados inválidos passados aos métodos para criar um cartão/usuário"
       );
-    });
+    })
+    .catch(next);
 };
