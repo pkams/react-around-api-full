@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String, // o nome é uma string
     required: true, // cada usuário tem um nome, logo, é um campo obrigatório
-    minlength: 8, // o comprimento mínimo do nome é de 8 caracteres
+    minlength: 2, // o comprimento mínimo do nome é de 8 caracteres
     select: false,
   },
 });
