@@ -59,6 +59,7 @@ export default function Register(props) {
                 className="register__form-input"
                 placeholder="Password"
                 required=""
+                minLength="8"
                 onChange={handleChange}
               />
               <span className="register__form-error job-error" />
