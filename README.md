@@ -42,7 +42,7 @@ Para rodar o frontend, repita o processo, porém entrando na pagina de "frontend
 O resultado do projeto pode ser acessado no seguinte endereço:
 https://www.patricksouza.students.nomoredomainssbs.ru
 ou
-patricksouza.students.nomoredomainssbs.ru
+https://patricksouza.students.nomoredomainssbs.ru
 
 Para api (backend) é possivel acessar via:
-api.patricksouza.students.nomoredomainssbs.ru
+https://api.patricksouza.students.nomoredomainssbs.ru
