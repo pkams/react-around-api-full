@@ -66,11 +66,12 @@ module.exports.createUser = (req, res, next) => {
         });
       })
       .catch((err) => {
+        console.log(err.name);
         if (err.name === "ValidationError") {
           throw new AuthError(
             "Dados inválidos passados aos métodos para criar um cartão/usuário"
           );
-        } else if (err.name === "MongoError") {
+        } else if (err.name === "MongoServerError") {
           throw new ConflictError("User already taken");
         } else {
           throw new ServerError("Erro no servidor.");

@@ -33,7 +33,7 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-// cors
+// inclua esses antes de outras rotas
 app.use(cors());
 app.options("*", cors()); //habilite solicitações para todas as rotas
 
@@ -85,6 +85,15 @@ app.get("*", (req, res) => {
 
 app.use(errorLogger); // habilitando o agente de erros
 
+app.use((err, req, res, next) => {
+  // se um erro não tiver status, exibir 500
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    // verifique o status e exiba uma mensagem baseada nele
+    message: statusCode === 500 ? "Ocorreu um erro no servidor" : message,
+  });
+});
+
 app.use(errors()); // tratamento de erros celebrate
 
 app.use((err, req, res, next) => {
@@ -93,15 +102,6 @@ app.use((err, req, res, next) => {
     throw new BadRequestError("Request não pode ser completado.");
   }
   next(err);
-});
-
-app.use((err, req, res, next) => {
-  // se um erro não tiver status, exibir 500
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    // verifique o status e exiba uma mensagem baseada nele
-    message: statusCode === 500 ? "Ocorreu um erro no servidor" : message,
-  });
 });
 
 app.listen(PORT, () => {
