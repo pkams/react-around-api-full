@@ -5,6 +5,7 @@ const cors = require("cors");
 const { celebrate, Joi, errors, isCelebrateError } = require("celebrate");
 
 const BadRequestError = require("./errors/bad-request-err");
+const ServerError = require("./errors/server-err");
 
 const cards = require("./routes/cards");
 const users = require("./routes/users");
@@ -17,16 +18,7 @@ const { requestLogger, errorLogger } = require("./middleware/logger");
 require("dotenv").config();
 
 // conecte ao servidor MongoDB
-mongoose.connect("mongodb://localhost:27017/aroundb", function (err, db) {
-  if (err) {
-    console.log(
-      "Incapaz de conectar ao BD. Por favor, restarte o servidor. Erro:",
-      err
-    );
-  } else {
-    console.log("Sucesso ao conectar ao BD!");
-  }
-});
+mongoose.connect("mongodb://localhost:27017/aroundb");
 
 // escute o port 3000
 const { PORT = 3000 } = process.env;
@@ -49,6 +41,7 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
+// Rotas configuradas aqui >> DE ACORDO COM ORIENTAÇÕES DO PROJETO <<.
 app.post(
   "/signin",
   celebrate({
@@ -59,6 +52,8 @@ app.post(
   }),
   login
 );
+
+// Rotas configuradas aqui >> DE ACORDO COM ORIENTAÇÕES DO PROJETO <<.
 app.post(
   "/signup",
   celebrate({
@@ -97,7 +92,6 @@ app.use((err, req, res, next) => {
 app.use(errors()); // tratamento de erros celebrate
 
 app.use((err, req, res, next) => {
-  console.log(err);
   if (isCelebrateError(err)) {
     throw new BadRequestError("Request não pode ser completado.");
   }
